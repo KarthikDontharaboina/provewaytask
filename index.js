@@ -6,32 +6,31 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".select-boxs, .selectcontainer").forEach(element => element.style.display = "none");
     boxes.forEach(box => {
         box.addEventListener("click", function (event) {
-            if (event.target !== box) return;
+            if (event.target.type === 'radio') {
+                return; 
+            }
             const radio = box.querySelector("input[name='option']");
-            if (radio && !radio.checked) {
+            if (radio) {
                 radio.checked = true;
-                radio.dispatchEvent(new Event('change'));
+                radio.dispatchEvent(new Event('change', { bubbles: true }));
             }
         });
-        box.querySelectorAll('*').forEach(child => {
-            child.addEventListener('click', function (event) {
-                event.stopPropagation();
-            });
-        });
     });
+
     radioButtons.forEach(radio => {
         radio.addEventListener("change", function () {
             const selectedUnit = parseFloat(this.value);
             totalPriceElement.textContent = selectedUnit.toFixed(2);
             document.querySelectorAll(".select-boxs, .selectcontainer").forEach(element => element.style.display = "none");
             const parentBox = this.closest(".box");
-            parentBox.querySelectorAll(".select-boxs, .selectcontainer").forEach(element => element.style.display = "flex");
+            const selectElements = parentBox.querySelectorAll(".select-boxs, .selectcontainer");
+            selectElements.forEach(element => element.style.display = "flex");
         });
     });
     addToCartButton.addEventListener("click", function () {
         const selectedRadio = document.querySelector("input[name='option']:checked");
         if (!selectedRadio) {
-            alert("Please select a unit option first!");
+            alert("Please select a unit option!");
             return;
         }
         const selectedProduct = selectedRadio.parentElement.textContent.trim();
@@ -44,9 +43,9 @@ document.addEventListener("DOMContentLoaded", function () {
             sizes: selectedSizes,
             colors: selectedColors
         };
+
         localStorage.setItem("cartData", JSON.stringify(cartData));
         window.location.href = "cart.html";
     });
 });
-
 
